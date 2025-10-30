@@ -9,8 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kt.dto.UserCreateRequest;
 import com.kt.service.UserService;
 
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "User", description = "user api")
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -20,9 +25,20 @@ public class UserController {
 
 	private final UserService userService;
 
+	// API 문서화에는 2가지가 있음
+	// 1. Swagger
+	// 장점: UI 이쁨, 어노테이션으로 작성
+	// 단점: 프로덕션 코드에 Swagger 관련 어노테이션이 있음 -> SRP 위반 (컨트롤러가 이거까지해서), 코드가 더러움
+	// 2. ResrDocs
+	// 장점: 프로덕션 코드에 작성 안함
+	// 단점: UI 구림, 문서작성에 시간이 걸림 (테스트 코드 기반)
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "400", description = "유효성 검사 실패"),
+		@ApiResponse(responseCode = "500", description = "서버 에러에요")
+	})
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
-	public void create(@RequestBody UserCreateRequest request) {
+	public void create(@Valid @RequestBody UserCreateRequest request) {
 		// jackson object mapper -> json 과 dto 매핑
 
 		userService.create(request);

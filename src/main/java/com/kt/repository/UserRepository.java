@@ -15,8 +15,43 @@ public class UserRepository {
 	public void save(User user) {
 		// 서비스에서 dto를 도메인(비즈니스 모델)으로 바꿔서 전달받음
 
-		var sql = "INSERT INTO MEMBER (loginId, password, name, birthday) VALUES (?, ?, ?, ?)";
+		var sql = """
+			INSERT INTO MEMBER (
+													id,
+													loginId, 
+													password, 
+													name,
+													birthday,
+													mobile,
+													email,
+													gender,
+													createdAt,
+													updatedAt     
+													) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			""";
+			// "INSERT INTO MEMBER (loginId, password, name, birthday) VALUES (?, ?, ?, ?)";
 
-		jdbcTemplate.update(sql, user.getLoginId(), user.getPassword(), user.getName(), user.getBirthday());
+		jdbcTemplate.update(
+			sql,
+			user.getId(),
+			user.getLoginId(),
+			user.getPassword(),
+			user.getName(),
+			user.getBirthday(),
+			user.getMobile(),
+			user.getEmail(),
+			user.getGender(),
+			user.getCreatedAt(),
+			user.getUpdatedAt()
+		);
+
+	}
+
+	public Long selectMaxId(){
+		var sql = "SELECT MAX(id) FROM MEMBER";
+
+		var maxId = jdbcTemplate.queryForObject(sql, Long.class);
+
+		return maxId == null ? 0L : maxId;
 	}
 }
