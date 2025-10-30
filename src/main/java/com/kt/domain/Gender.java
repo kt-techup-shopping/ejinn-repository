@@ -1,5 +1,5 @@
 package com.kt.domain;
 
 public enum Gender {
-	MAKE, FEMALE,
+	MALE, FEMALE,
 }
