@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
 import com.kt.domain.User;
+import com.kt.dto.CustomPage;
 import com.kt.dto.UserCreateRequest;
 import com.kt.repository.UserRepository;
 
@@ -50,5 +51,50 @@ public class UserService {
 		}
 
 		userRepository.updatePassword(id, password);
+	}
+
+	public CustomPage search(int page, int size, String keyword) {
+		var pair = userRepository.selectAll(page - 1, size, keyword);
+		var pages = (int)Math.ceil((double) pair.getSecond() / size);
+
+		return new CustomPage(
+			pair.getFirst(),
+			size,
+			page,
+			pages,
+			pair.getSecond()
+		);
+	}
+
+	public User detail(Long id) {
+		return userRepository
+			.selectById(id)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+	}
+
+	public void update(Long id, String name, String email, String mobile){
+		userRepository
+			.selectById(id)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+
+		userRepository.updateById(id, name, email, mobile);
+	}
+
+	public void delete(Long id) {
+		userRepository
+			.selectById(id)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+
+		userRepository.deleteById(id);
+	}
+
+	public void initPassword(Long id) {
+		userRepository
+			.selectById(id)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+
+		String encoded = "abcdabcd1234!@#$";
+
+		userRepository.initPassword(id, encoded);
 	}
 }

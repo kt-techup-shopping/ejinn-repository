@@ -4,14 +4,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.util.Pair;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.kt.domain.Gender;
 import com.kt.domain.User;
+import com.kt.dto.CustomPage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -93,6 +96,34 @@ public class UserRepository {
 		var list = jdbcTemplate.query(sql, rowMapper(), id);
 
 		return list.stream().findFirst();
+	}
+
+	public Pair<List<User>, Long> selectAll(int page, int size, String keyword) {
+		var sql = "SELECT * FROM MEMBER WHERE name LIKE CONCAT('%', ?, '%') LIMIT ? OFFSET ?";
+		var users = jdbcTemplate.query(sql, rowMapper(), keyword, size, page);
+
+		var countSql = "SELECT COUNT(*) FROM MEMBER WHERE name LIKE CONCAT('%', ?, '%')";
+		var totalElements = jdbcTemplate.queryForObject(countSql, Long.class);
+
+		return Pair.of(users, totalElements);
+	}
+
+	public void updateById(Long id, String name, String email, String mobile) {
+		var sql = "UPDATE MEMBER SET name = ?, email = ?, mobile = ?, updatedAt = ? WHERE id = ?";
+
+		jdbcTemplate.update(sql, name, email, mobile, LocalDateTime.now(), id);
+	}
+
+	public void deleteById(Long id) {
+		var sql = "DELETE FROM MEMBER WHERE id = ?";
+
+		jdbcTemplate.update(sql, id);
+	}
+
+	public void initPassword(Long id, String encodedPassword) {
+		String sql = "UPDATE MEMBER SET password = ?, updatedAt = ? WHERE id = ?";
+
+		jdbcTemplate.update(sql, encodedPassword, LocalDate.now(), id);
 	}
 
 	private RowMapper<User> rowMapper(){
