@@ -31,4 +31,24 @@ public class UserService {
 
 		userRepository.save(newUser);
 	}
+
+	public boolean isDuplicateLoginId(String loginId) {
+		return userRepository.existByLoginId(loginId);
+	}
+
+	public void changePassword(Long id, String oldPassword, String password) {
+		var user = userRepository
+			.selectById(id)
+			.orElseThrow(() -> new IllegalArgumentException("없어요"));
+
+		if (!oldPassword.equals(user.getPassword())) {
+			throw new IllegalArgumentException("비밀번호가 틀림");
+		}
+
+		if (oldPassword.equals(password)) {
+			throw new IllegalArgumentException("기존 비밀번호와 동일");
+		}
+
+		userRepository.updatePassword(id, password);
+	}
 }
