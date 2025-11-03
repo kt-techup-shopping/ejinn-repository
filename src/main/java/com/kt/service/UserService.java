@@ -65,4 +65,19 @@ public class UserService {
 			pair.getSecond()
 		);
 	}
+
+	public User detail(Long id) {
+		return userRepository
+			.selectById(id)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+	}
+
+	public void update(Long id, String name, String email, String mobile){
+		userRepository
+			.selectById(id)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+
+		userRepository.updateById(id, name, email, mobile);
+
+	}
 }
