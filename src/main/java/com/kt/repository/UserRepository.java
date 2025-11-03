@@ -120,6 +120,12 @@ public class UserRepository {
 		jdbcTemplate.update(sql, id);
 	}
 
+	public void initPassword(Long id, String encodedPassword) {
+		String sql = "UPDATE MEMBER SET password = ?, updatedAt = ? WHERE id = ?";
+
+		jdbcTemplate.update(sql, encodedPassword, LocalDate.now(), id);
+	}
+
 	private RowMapper<User> rowMapper(){
 		return (rs, rowNum) -> mapToUser(rs);
 	}

@@ -87,4 +87,14 @@ public class UserService {
 
 		userRepository.deleteById(id);
 	}
+
+	public void initPassword(Long id) {
+		userRepository
+			.selectById(id)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+
+		String encoded = "abcdabcd1234!@#$";
+
+		userRepository.initPassword(id, encoded);
+	}
 }
