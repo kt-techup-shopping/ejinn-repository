@@ -98,11 +98,11 @@ public class UserRepository {
 		return list.stream().findFirst();
 	}
 
-	public Pair<List<User>, Long> selectAll(int page, int size) {
-		var sql = "SELECT * FROM MEMBER LIMIT ? OFFSET ?";
-		var users = jdbcTemplate.query(sql, rowMapper(), page, size);
+	public Pair<List<User>, Long> selectAll(int page, int size, String keyword) {
+		var sql = "SELECT * FROM MEMBER WHERE name LIKE CONCAT('%', ?, '%') LIMIT ? OFFSET ?";
+		var users = jdbcTemplate.query(sql, rowMapper(), keyword, size, page);
 
-		var countSql = "SELECT COUNT(*) FROM MEMBER";
+		var countSql = "SELECT COUNT(*) FROM MEMBER WHERE name LIKE CONCAT('%', ?, '%')";
 		var totalElements = jdbcTemplate.queryForObject(countSql, Long.class);
 
 		return Pair.of(users, totalElements);
