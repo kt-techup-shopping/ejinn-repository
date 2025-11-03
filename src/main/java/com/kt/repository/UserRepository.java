@@ -4,14 +4,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.util.Pair;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.kt.domain.Gender;
 import com.kt.domain.User;
+import com.kt.dto.CustomPage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -93,6 +96,16 @@ public class UserRepository {
 		var list = jdbcTemplate.query(sql, rowMapper(), id);
 
 		return list.stream().findFirst();
+	}
+
+	public Pair<List<User>, Long> selectAll(int page, int size) {
+		var sql = "SELECT * FROM MEMBER LIMIT ? OFFSET ?";
+		var users = jdbcTemplate.query(sql, rowMapper(), page, size);
+
+		var countSql = "SELECT COUNT(*) FROM MEMBER";
+		var totalElements = jdbcTemplate.queryForObject(countSql, Long.class);
+
+		return Pair.of(users, totalElements);
 	}
 
 	private RowMapper<User> rowMapper(){
