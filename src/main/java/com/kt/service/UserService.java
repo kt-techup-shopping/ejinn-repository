@@ -78,6 +78,13 @@ public class UserService {
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
 
 		userRepository.updateById(id, name, email, mobile);
+	}
 
+	public void delete(Long id) {
+		userRepository
+			.selectById(id)
+			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+
+		userRepository.deleteById(id);
 	}
 }

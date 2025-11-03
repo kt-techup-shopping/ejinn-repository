@@ -114,6 +114,12 @@ public class UserRepository {
 		jdbcTemplate.update(sql, name, email, mobile, LocalDateTime.now(), id);
 	}
 
+	public void deleteById(Long id) {
+		var sql = "DELETE FROM MEMBER WHERE id = ?";
+
+		jdbcTemplate.update(sql, id);
+	}
+
 	private RowMapper<User> rowMapper(){
 		return (rs, rowNum) -> mapToUser(rs);
 	}

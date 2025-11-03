@@ -2,6 +2,7 @@ package com.kt.controller;
 
 import org.apache.coyote.Request;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AdminUserController {
 	private UserService userService;
+
 	// 유저 리스트 조회
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
@@ -46,10 +48,16 @@ public class AdminUserController {
 	// 유저 정보 수정
 	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public void update(@PathVariable Long id, @RequestBody @Valid UserUpdateRequest request){
+	public void update(@PathVariable Long id, @RequestBody @Valid UserUpdateRequest request) {
 		userService.update(id, request.name(), request.email(), request.mobile());
 	}
 
 	// 유저 삭제
+	@DeleteMapping("/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public void delete(@PathVariable Long id) {
+		userService.delete(id);
+	}
+
 	// 유저 비밀번호 초기화
 }
