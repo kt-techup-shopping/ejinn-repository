@@ -32,7 +32,7 @@ public class UserService {
 		userRepository.save(newUser);
 	}
 
-	private boolean isDuplicateLoginId(String loginId) {
+	public boolean isDuplicateLoginId(String loginId) {
 		return userRepository.existByLoginId(loginId);
 	}
 }
