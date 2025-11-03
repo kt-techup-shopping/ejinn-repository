@@ -2,7 +2,9 @@ package com.kt.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.dto.UserCreateRequest;
+import com.kt.dto.UserUpdatePasswordRequest;
 import com.kt.service.UserService;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -59,5 +62,20 @@ public class UserController {
 	// IllgerArgumentException 발생 시 에러
 	public Boolean isDuplicateLoginId(@RequestParam String loginId) {
 		return userService.isDuplicateLoginId(loginId);
+	}
+
+	// uri는 식별이 가능해야한다
+	// body에 json으로 전달
+
+	// 1. 바디에 id 값
+	// 2. uri에 id 값
+	// 3. 인증/인가 객체에서 id 값
+	@PutMapping("/{id}/change-password")
+	@ResponseStatus(HttpStatus.OK)
+	public void changePassword(
+		@PathVariable Long id,
+		@RequestBody @Valid UserUpdatePasswordRequest request
+	) {
+		userService.changePassword(id, request.oldPasswrod(), request.newPassword());
 	}
 }
