@@ -2,10 +2,12 @@ package com.kt.service;
 
 import java.time.LocalDateTime;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.kt.domain.User;
-import com.kt.dto.CustomPage;
+import com.kt.domain.user.User;
 import com.kt.dto.UserCreateRequest;
 import com.kt.repository.UserRepository;
 
@@ -13,12 +15,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
+	// private final UserJDBCRepository userJDBCRepository;
 	private final UserRepository userRepository;
 
+	// PSA: 환경설정을 살짝 바꿔서 일관된 서비스를 제공하는 것
 	public void create(UserCreateRequest request) {
 		var newUser = new User(
-			userRepository.selectMaxId() + 1,
 			request.loginId(),
 			request.password(),
 			request.name(),
@@ -34,12 +38,12 @@ public class UserService {
 	}
 
 	public boolean isDuplicateLoginId(String loginId) {
-		return userRepository.existByLoginId(loginId);
+		return userRepository.existsByLoginId(loginId);
 	}
 
 	public void changePassword(Long id, String oldPassword, String password) {
 		var user = userRepository
-			.selectById(id)
+			.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("없어요"));
 
 		if (!oldPassword.equals(user.getPassword())) {
@@ -50,51 +54,43 @@ public class UserService {
 			throw new IllegalArgumentException("기존 비밀번호와 동일");
 		}
 
-		userRepository.updatePassword(id, password);
+		user.changePassword(password);
 	}
 
-	public CustomPage search(int page, int size, String keyword) {
-		var pair = userRepository.selectAll(page - 1, size, keyword);
-		var pages = (int)Math.ceil((double) pair.getSecond() / size);
-
-		return new CustomPage(
-			pair.getFirst(),
-			size,
-			page,
-			pages,
-			pair.getSecond()
-		);
+	public Page<User> search(Pageable pageable, String keyword) {
+		return userRepository.findAllByNameContaining(keyword, pageable);
 	}
 
 	public User detail(Long id) {
 		return userRepository
-			.selectById(id)
+			.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
 	}
 
 	public void update(Long id, String name, String email, String mobile){
-		userRepository
-			.selectById(id)
+		var user = userRepository
+			.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
 
-		userRepository.updateById(id, name, email, mobile);
+		user.update(name, email, mobile);
 	}
 
 	public void delete(Long id) {
 		userRepository
-			.selectById(id)
+			.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
 
+		// 삭제에는 softdelete, harddelete가 있음
 		userRepository.deleteById(id);
 	}
 
 	public void initPassword(Long id) {
-		userRepository
-			.selectById(id)
+		var user = userRepository
+			.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
 
 		String encoded = "abcdabcd1234!@#$";
 
-		userRepository.initPassword(id, encoded);
+		user.changePassword(encoded);
 	}
 }

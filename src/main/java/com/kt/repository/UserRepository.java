@@ -1,147 +1,21 @@
 package com.kt.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import org.springframework.data.util.Pair;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
+import com.kt.domain.user.User;
 
-import com.kt.domain.Gender;
-import com.kt.domain.User;
-import com.kt.dto.CustomPage;
+// <T, ID>
+// T: Entity 클래스
+// ID: Entity 클래스의 PK 타입
+public interface UserRepository extends JpaRepository<User, Long> {
+	// JPA 쿼리작성 방법
+	// 1. native query
+	// 2. jpql
+	// 3. querymethod
 
-import lombok.RequiredArgsConstructor;
+	Boolean existsByLoginId(String loginId);
 
-@Repository
-@RequiredArgsConstructor
-public class UserRepository {
-	private final JdbcTemplate jdbcTemplate;
-
-	public void save(User user) {
-		// 서비스에서 dto를 도메인(비즈니스 모델)으로 바꿔서 전달받음
-
-		var sql = """
-			INSERT INTO MEMBER (
-													id,
-													loginId, 
-													password, 
-													name,
-													birthday,
-													mobile,
-													email,
-													gender,
-													createdAt,
-													updatedAt     
-													) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-			""";
-			// "INSERT INTO MEMBER (loginId, password, name, birthday) VALUES (?, ?, ?, ?)";
-
-		jdbcTemplate.update(
-			sql,
-			user.getId(),
-			user.getLoginId(),
-			user.getPassword(),
-			user.getName(),
-			user.getBirthday(),
-			user.getMobile(),
-			user.getEmail(),
-			user.getGender(),
-			user.getCreatedAt(),
-			user.getUpdatedAt()
-		);
-
-	}
-
-	public Long selectMaxId(){
-		var sql = "SELECT MAX(id) FROM MEMBER";
-
-		var maxId = jdbcTemplate.queryForObject(sql, Long.class);
-
-		return maxId == null ? 0L : maxId;
-	}
-
-	// 아이디 중복 체크
-	// 1. count 해서 0보다 큰지 체크, select 해서 결과가 있는데 체크 -> 별로임
-	// 2. unique 제약조건 걸어서 예외 처리 -> (DateViolatuion Exception) 별로인듯
-	// 3. exist로 존재 여부 체크 -> boolean으로 바로 알 수 있음
-
-	 public boolean existByLoginId(String loginId) {
-		 var sql = "SELECT EXIST (SELECT id FROM MEMBER WHERE loginId = ?)";
-
-		 return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, loginId));
-	 }
-
-	public void updatePassword(Long id, String password) {
-		var sql = "UPDATE MEMBER SET password = ? WHERE id = ?";
-
-		jdbcTemplate.update(sql, password, id);
-	}
-
-	public boolean existById(Long id) {
-		var sql = "SELECT EXIST (SELECT id FROM MEMBER WHERE id = ?)";
-
-		return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, Boolean.class, id));
-	}
-
-	public Optional<User> selectById(Long id) {
-		var sql = "SELECT * FROM WHERE id = ?";
-
-		// return jdbcTemplate.queryForObject(sql, rowMapper(), id);
-		var list = jdbcTemplate.query(sql, rowMapper(), id);
-
-		return list.stream().findFirst();
-	}
-
-	public Pair<List<User>, Long> selectAll(int page, int size, String keyword) {
-		var sql = "SELECT * FROM MEMBER WHERE name LIKE CONCAT('%', ?, '%') LIMIT ? OFFSET ?";
-		var users = jdbcTemplate.query(sql, rowMapper(), keyword, size, page);
-
-		var countSql = "SELECT COUNT(*) FROM MEMBER WHERE name LIKE CONCAT('%', ?, '%')";
-		var totalElements = jdbcTemplate.queryForObject(countSql, Long.class);
-
-		return Pair.of(users, totalElements);
-	}
-
-	public void updateById(Long id, String name, String email, String mobile) {
-		var sql = "UPDATE MEMBER SET name = ?, email = ?, mobile = ?, updatedAt = ? WHERE id = ?";
-
-		jdbcTemplate.update(sql, name, email, mobile, LocalDateTime.now(), id);
-	}
-
-	public void deleteById(Long id) {
-		var sql = "DELETE FROM MEMBER WHERE id = ?";
-
-		jdbcTemplate.update(sql, id);
-	}
-
-	public void initPassword(Long id, String encodedPassword) {
-		String sql = "UPDATE MEMBER SET password = ?, updatedAt = ? WHERE id = ?";
-
-		jdbcTemplate.update(sql, encodedPassword, LocalDate.now(), id);
-	}
-
-	private RowMapper<User> rowMapper(){
-		return (rs, rowNum) -> mapToUser(rs);
-	}
-
-	private User mapToUser(ResultSet rs) throws SQLException {
-		return new User(
-			rs.getLong("id"),
-			rs.getString("loginId"),
-			rs.getString("password"),
-			rs.getString("name"),
-			rs.getString("email"),
-			rs.getString("mobile"),
-			Gender.valueOf(rs.getString("gender")),
-			rs.getObject("birthday", LocalDate.class),
-			rs.getObject("createdAt", LocalDateTime.class),
-			rs.getObject("updatedAt", LocalDateTime.class)
-		);
-	}
+	Page<User> findAllByNameContaining(String name, Pageable pageable);
 }
