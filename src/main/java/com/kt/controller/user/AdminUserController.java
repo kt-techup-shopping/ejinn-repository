@@ -1,7 +1,6 @@
 package com.kt.controller.user;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kt.common.Paging;
 import com.kt.domain.user.User;
+import com.kt.dto.user.UserResponse;
 import com.kt.dto.user.UserUpdateRequest;
 import com.kt.service.UserService;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -30,13 +32,19 @@ public class AdminUserController {
 	// 유저 리스트 조회
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public Page<User> search(
-		@RequestParam(defaultValue = "1") int page,
-		@RequestParam(defaultValue = "10") int size,
-		@RequestParam(required = false) String keyword
+	public Page<UserResponse.Search> search(
+		@RequestParam(required = false) String keyword,
+		@Parameter(hidden = true) Paging paging
 	) {
+		var search = userService
+			.search(paging.toPageable(), keyword)
+			.map(user -> new UserResponse.Search(
+				user.getId(),
+				user.getName(),
+				user.getCreatedAt()
+			));
 
-		return userService.search(PageRequest.of(page - 1, size), keyword);
+		return search;
 	}
 
 	// 유저 상세 조회
