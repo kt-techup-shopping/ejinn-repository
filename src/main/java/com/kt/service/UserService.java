@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.ErrorCode;
 import com.kt.domain.user.User;
 import com.kt.dto.user.UserCreateRequest;
 import com.kt.repository.UserRepository;
@@ -42,9 +43,7 @@ public class UserService {
 	}
 
 	public void changePassword(Long id, String oldPassword, String password) {
-		var user = userRepository
-			.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("없어요"));
+		var user = userRepository.findByIdOrThrow(id, ErrorCode.NOT_FOUND_USER);
 
 		if (!oldPassword.equals(user.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 틀림");
@@ -62,32 +61,24 @@ public class UserService {
 	}
 
 	public User detail(Long id) {
-		return userRepository
-			.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+		return userRepository.findByIdOrThrow(id, ErrorCode.NOT_FOUND_USER);
 	}
 
 	public void update(Long id, String name, String email, String mobile){
-		var user = userRepository
-			.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+		var user = userRepository.findByIdOrThrow(id, ErrorCode.NOT_FOUND_USER);
 
 		user.update(name, email, mobile);
 	}
 
 	public void delete(Long id) {
-		userRepository
-			.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+		userRepository.findByIdOrThrow(id, ErrorCode.NOT_FOUND_USER);
 
 		// 삭제에는 softdelete, harddelete가 있음
 		userRepository.deleteById(id);
 	}
 
 	public void initPassword(Long id) {
-		var user = userRepository
-			.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디"));
+		var user = userRepository.findByIdOrThrow(id, ErrorCode.NOT_FOUND_USER);
 
 		String encoded = "abcdabcd1234!@#$";
 
