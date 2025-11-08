@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "MEMBER")
 public class User extends BaseEntity {
 	private String loginId;
 	private String password;

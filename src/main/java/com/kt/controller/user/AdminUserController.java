@@ -1,4 +1,4 @@
-package com.kt.controller;
+package com.kt.controller.user;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.domain.user.User;
-import com.kt.dto.UserUpdateRequest;
+import com.kt.dto.user.UserUpdateRequest;
 import com.kt.service.UserService;
 
 import jakarta.validation.Valid;
