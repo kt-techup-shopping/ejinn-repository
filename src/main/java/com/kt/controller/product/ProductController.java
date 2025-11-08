@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kt.common.ApiResult;
+import com.kt.common.SwaggerAssistance;
 import com.kt.dto.product.ProductRequest;
 import com.kt.service.ProductService;
 
@@ -22,21 +24,23 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
-public class ProductController {
+public class ProductController extends SwaggerAssistance {
 	private final ProductService productService;
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public void create(@RequestBody @Valid ProductRequest.Create request) {
+	public ApiResult<Void> create(@RequestBody @Valid ProductRequest.Create request) {
 		productService.create(
 			request.getName(),
 			request.getPrice(),
 			request.getQuantity()
 		);
+
+		return ApiResult.ok();
 	}
 
 	@PutMapping("/{id}")
-	public void update(
+	public ApiResult<Void> update(
 		@PathVariable Long id,
 		@RequestBody @Valid ProductRequest.Update request
 	) {
@@ -46,25 +50,35 @@ public class ProductController {
 			request.getPrice(),
 			request.getQuantity()
 		);
+
+		return ApiResult.ok();
 	}
 
 	@PatchMapping("/{id}/sold-out")
-	public void soldOut(@PathVariable Long id) {
+	public ApiResult<Void> soldOut(@PathVariable Long id) {
 		productService.soldOut(id);
+
+		return ApiResult.ok();
 	}
 
 	@PatchMapping("/{id}/activate")
-	public void activate(@PathVariable Long id) {
+	public ApiResult<Void> activate(@PathVariable Long id) {
 		productService.soldOut(id);
+
+		return ApiResult.ok();
 	}
 
 	@PatchMapping("/{id}/in-activate")
-	public void inActivate(@PathVariable Long id) {
+	public ApiResult<Void> inActivate(@PathVariable Long id) {
 		productService.inActivate(id);
+
+		return ApiResult.ok();
 	}
 
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable Long id) {
+	public ApiResult<Void> delete(@PathVariable Long id) {
 		productService.delete(id);
+
+		return ApiResult.ok();
 	}
 }
