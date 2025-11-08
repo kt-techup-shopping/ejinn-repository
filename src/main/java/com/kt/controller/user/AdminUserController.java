@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kt.common.ApiResult;
 import com.kt.common.Paging;
+import com.kt.common.SwaggerAssistance;
 import com.kt.domain.user.User;
 import com.kt.dto.user.UserResponse;
 import com.kt.dto.user.UserUpdateRequest;
 import com.kt.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +29,20 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/admin/users")
 @RequiredArgsConstructor
-public class AdminUserController {
+public class AdminUserController extends SwaggerAssistance {
 	private final UserService userService;
 
 	// 유저 리스트 조회
+	@Operation(
+		parameters = {
+			@Parameter(name = "keyword", description = "검색 키워드(이름)"),
+			@Parameter(name = "page", description = "페이지 번호", example = "1"),
+			@Parameter(name = "size", description = "페이지 크기", example = "10")
+		}
+	)
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
-	public Page<UserResponse.Search> search(
+	public ApiResult<Page<UserResponse.Search>> search(
 		@RequestParam(required = false) String keyword,
 		@Parameter(hidden = true) Paging paging
 	) {
@@ -44,21 +54,29 @@ public class AdminUserController {
 				user.getCreatedAt()
 			));
 
-		return search;
+		return ApiResult.ok(search);
 	}
 
 	// 유저 상세 조회
 	@GetMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public User detail(@PathVariable Long id) {
-		return userService.detail(id);
+	public ApiResult<UserResponse.Detail> detail(@PathVariable Long id) {
+		var user = userService.detail(id);
+
+		return ApiResult.ok(new UserResponse.Detail(
+			user.getId(),
+			user.getName(),
+			user.getEmail()
+		));
 	}
 
 	// 유저 정보 수정
 	@PutMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public void update(@PathVariable Long id, @RequestBody @Valid UserUpdateRequest request) {
+	public ApiResult<Void> update(@PathVariable Long id, @RequestBody @Valid UserUpdateRequest request) {
 		userService.update(id, request.name(), request.email(), request.mobile());
+
+		return ApiResult.ok();
 	}
 
 	// 유저 삭제
@@ -71,7 +89,9 @@ public class AdminUserController {
 	// 유저 비밀번호 초기화
 	@PostMapping("/{id}/init-password")
 	@ResponseStatus(HttpStatus.OK)
-	public void initPassword(@PathVariable Long id) {
+	public ApiResult<Void> initPassword(@PathVariable Long id) {
 		userService.initPassword(id);
+
+		return ApiResult.ok();
 	}
 }
