@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.domain.user.User;
-import com.kt.dto.UserCreateRequest;
+import com.kt.dto.user.UserCreateRequest;
 import com.kt.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
