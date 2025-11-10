@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor
 public class User extends BaseEntity {
 	private String loginId;
 	private String password;

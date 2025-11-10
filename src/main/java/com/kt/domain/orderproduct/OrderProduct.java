@@ -12,7 +12,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class OrderProduct  extends BaseEntity {
+public class OrderProduct extends BaseEntity {
 	private Long quantity;
 
 	@ManyToOne
@@ -24,4 +24,10 @@ public class OrderProduct  extends BaseEntity {
 	private Product product;
 
 	// 주문이 생성되면 오더프로덕트도 같이 생성됨
+
+	public OrderProduct(Order order, Product product, Long quantity) {
+		this.order = order;
+		this.product = product;
+		this.quantity = quantity;
+	}
 }
