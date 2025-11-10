@@ -11,7 +11,7 @@ import com.kt.common.ErrorCode;
 import com.kt.common.Preconditions;
 import com.kt.domain.user.User;
 import com.kt.dto.user.UserCreateRequest;
-import com.kt.repository.UserRepository;
+import com.kt.repository.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -60,7 +60,7 @@ public class UserService {
 		return userRepository.findByIdOrThrow(id, ErrorCode.NOT_FOUND_USER);
 	}
 
-	public void update(Long id, String name, String email, String mobile){
+	public void update(Long id, String name, String email, String mobile) {
 		var user = userRepository.findByIdOrThrow(id, ErrorCode.NOT_FOUND_USER);
 
 		user.update(name, email, mobile);

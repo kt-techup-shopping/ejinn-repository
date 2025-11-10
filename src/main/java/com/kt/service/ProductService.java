@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kt.domain.product.Product;
-import com.kt.repository.ProductRepository;
+import com.kt.repository.product.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 

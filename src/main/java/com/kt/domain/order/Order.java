@@ -6,9 +6,9 @@ import java.util.List;
 
 import com.kt.common.BaseEntity;
 import com.kt.domain.orderproduct.OrderProduct;
-import com.kt.domain.product.Product;
 import com.kt.domain.user.User;
 
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,9 +22,8 @@ import lombok.Getter;
 @Getter
 @Table(name = "orders")
 public class Order extends BaseEntity {
-	private String receiverName;
-	private String receiverAddress;
-	private String receiverMobile;
+	@Embedded
+	private Receiver receiver;
 	@Enumerated(EnumType.STRING)
 	private OrderStatus status;
 	private LocalDateTime deliveredAt;
@@ -37,4 +36,24 @@ public class Order extends BaseEntity {
 	private List<OrderProduct> orderProducts = new ArrayList<>();
 
 	// 주문생성, 주문상태변경, 주문생성완료재고차감, 배송받는사람정보수정, 주문취소
+
+	private Order(Receiver receiver, User user) {
+		this.receiver = receiver;
+		this.user = user;
+		this.deliveredAt = LocalDateTime
+			.now()
+			.plusDays(3);
+		this.status = OrderStatus.PENDING;
+	}
+
+	public static Order create(Receiver receiver, User user) {
+		return new Order(
+			receiver,
+			user
+		);
+	}
+
+	public void mapToOrderProduct(OrderProduct orderProduct) {
+		this.orderProducts.add(orderProduct);
+	}
 }
