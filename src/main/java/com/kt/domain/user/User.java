@@ -3,7 +3,10 @@ package com.kt.domain.user;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
 
 import com.kt.common.BaseEntity;
 import com.kt.domain.order.Order;
@@ -34,12 +37,14 @@ public class User extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Gender gender;
 	private LocalDate birthday;
+	@Enumerated(EnumType.STRING)
+	private Role role;
 
 	@OneToMany(mappedBy = "user")
 	private List<Order> orders = new ArrayList<>();
 
 	public User(String loginId, String password, String name, String email, String mobile, Gender gender,
-		LocalDate birthday, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		LocalDate birthday, LocalDateTime createdAt, LocalDateTime updatedAt, Role role) {
 		this.loginId = loginId;
 		this.password = password;
 		this.name = name;
@@ -49,6 +54,39 @@ public class User extends BaseEntity {
 		this.birthday = birthday;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+	}
+
+	public static User normalUser(String loginId, String password, String name, String email, String mobile,
+		Gender gender, LocalDate birthday, LocalDateTime createdAt, LocalDateTime updatedAt) {
+
+		return new User(
+			loginId,
+			password,
+			name,
+			email,
+			mobile,
+			gender,
+			birthday,
+			createdAt,
+			updatedAt,
+			Role.USER
+		);
+	}
+
+	public static User admin(String loginId, String password, String name, String email, String mobile, Gender gender,
+		LocalDate birthday, LocalDateTime createdAt, LocalDateTime updatedAt) {
+
+		return User.admin(
+			loginId,
+			password,
+			name,
+			email,
+			mobile,
+			gender,
+			birthday,
+			createdAt,
+			updatedAt
+		);
 	}
 
 	public void changePassword(String password) {
