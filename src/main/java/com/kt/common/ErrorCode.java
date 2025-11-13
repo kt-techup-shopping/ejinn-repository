@@ -17,8 +17,9 @@ public enum ErrorCode {
 	CAN_NOT_ALLOWED_SAME_PASSWORD(HttpStatus.BAD_REQUEST, "기존 비밀번호와 동일한 비밀번호로 변경할 수 없습니다."),
 
 	// product
-	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다.");
-	
+	NOT_ENOUGH_STOCK(HttpStatus.BAD_REQUEST, "재고가 부족합니다."),
+	INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "필수값 누락입니다.");
+
 	private final HttpStatus status;
 	private final String message;
 

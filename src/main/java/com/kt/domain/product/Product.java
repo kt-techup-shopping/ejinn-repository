@@ -4,7 +4,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.util.Strings;
+
 import com.kt.common.BaseEntity;
+import com.kt.common.ErrorCode;
+import com.kt.common.Preconditions;
 import com.kt.domain.order.Order;
 import com.kt.domain.orderproduct.OrderProduct;
 
@@ -33,6 +37,10 @@ public class Product extends BaseEntity {
 	private List<OrderProduct> orderProducts = new ArrayList<>();
 
 	public Product(String name, Long price, Long stock) {
+		Preconditions.validate(Strings.isNotBlank(name), ErrorCode.INVALID_PARAMETER);
+		Preconditions.validate(price != null && price >= 0, ErrorCode.INVALID_PARAMETER);
+		Preconditions.validate(stock != null && stock >= 0, ErrorCode.INVALID_PARAMETER);
+
 		this.name = name;
 		this.price = price;
 		this.stock = stock;
