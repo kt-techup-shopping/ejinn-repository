@@ -4,7 +4,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.util.Strings;
+
 import com.kt.common.BaseEntity;
+import com.kt.common.ErrorCode;
+import com.kt.common.Preconditions;
 import com.kt.domain.order.Order;
 import com.kt.domain.orderproduct.OrderProduct;
 
@@ -16,6 +20,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,12 +32,16 @@ public class Product extends BaseEntity {
 	private Long price;
 	private Long stock;
 	@Enumerated(EnumType.STRING)
-	private ProductStatus status;
+	private ProductStatus status = ProductStatus.ACTIVATED;
 
 	@OneToMany(mappedBy = "product")
 	private List<OrderProduct> orderProducts = new ArrayList<>();
 
 	public Product(String name, Long price, Long stock) {
+		Preconditions.validate(Strings.isNotBlank(name), ErrorCode.INVALID_PARAMETER);
+		Preconditions.validate(price != null && price >= 0, ErrorCode.INVALID_PARAMETER);
+		Preconditions.validate(stock != null && stock >= 0, ErrorCode.INVALID_PARAMETER);
+
 		this.name = name;
 		this.price = price;
 		this.stock = stock;

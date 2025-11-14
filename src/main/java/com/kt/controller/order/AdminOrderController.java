@@ -10,6 +10,7 @@ import com.kt.common.ApiResult;
 import com.kt.common.Paging;
 import com.kt.dto.order.OrderResponse;
 import com.kt.repository.order.OrderRepository;
+import com.kt.repository.order.OrderRepositoryCustom;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/admin/orders")
 @RequiredArgsConstructor
 public class AdminOrderController {
-	private final OrderRepository orderRepository;
+	private final OrderRepositoryCustom orderRepository;
 
 	// 1. 레포지토리 주입 바로 받아서 할거냐 -> 싱크홀 안티패턴
 	// 2. 그래도 서비스를 통해야한다.
