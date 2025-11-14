@@ -1,9 +1,14 @@
 package com.kt.service;
 
+import java.util.concurrent.TimeUnit;
+
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kt.common.CustomException;
 import com.kt.common.ErrorCode;
+import com.kt.common.Lock;
 import com.kt.common.Preconditions;
 import com.kt.domain.order.Order;
 import com.kt.domain.order.Receiver;
@@ -23,7 +28,9 @@ public class OrderService {
 	private final ProductRepository productRepository;
 	private final OrderRepository orderRepository;
 	private final OrderProductRepository orderProductRepository;
+	private final RedissonClient redissonClient;
 
+	@Lock(key = Lock.Key.STOCK, index = 1)
 	public void create(
 		Long userId,
 		Long productId,
@@ -32,8 +39,11 @@ public class OrderService {
 		String receiverMobile,
 		Long quantity
 	) {
+
+		// var product = productRepository.findByIdPessimistic(productId).orElseThrow();
 		var product = productRepository.findByIdOrThrow(productId);
 
+		System.out.println(product.getStock());
 		Preconditions.validate(product.canProvide(quantity), ErrorCode.NOT_ENOUGH_STOCK);
 
 		var user = userRepository.findByIdOrThrow(userId, ErrorCode.NOT_FOUND_USER);

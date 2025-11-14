@@ -20,6 +20,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,7 +32,7 @@ public class Product extends BaseEntity {
 	private Long price;
 	private Long stock;
 	@Enumerated(EnumType.STRING)
-	private ProductStatus status;
+	private ProductStatus status = ProductStatus.ACTIVATED;
 
 	@OneToMany(mappedBy = "product")
 	private List<OrderProduct> orderProducts = new ArrayList<>();
