@@ -13,17 +13,25 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.kt.security.JwtFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfiguration {
 	// 패스워드 저장할거면 암호화
 	// bcrypt 단방향 해시 암호화
 	// 평문은 5번 해싱해서 랜덤한 값을 저장 -> 비교할 때는 5번 해싱해서 같은 지를 비교
 
-	private static final String[] GET_PERMIT_ALL = {"/api/health/**"};
-	private static final String[] POST_PERMIT_ALL = {"/api/v1/public/**"};
+	private final JwtFilter jwtFilter;
+
+	private static final String[] GET_PERMIT_ALL = {"/api/health/**", "/swagger-ui/**", "/v3/api-docs/**"};
+	private static final String[] POST_PERMIT_ALL = {"/users", "/auth/login"};
 	private static final String[] PUT_PERMIT_ALL = {"/api/v1/public/**"};
 	private static final String[] PATCH_PERMIT_ALL = {"/api/v1/public/**"};
 	private static final String[] DELETE_PERMIT_ALL = {"/api/v1/public/**"};
@@ -38,6 +46,7 @@ public class SecurityConfiguration {
 		return configuration.getAuthenticationManager();
 	}
 
+	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
 			.sessionManagement(
@@ -60,11 +69,13 @@ public class SecurityConfiguration {
 					request
 						.requestMatchers(HttpMethod.DELETE, DELETE_PERMIT_ALL)
 						.permitAll();
+
+					request
+						.anyRequest()
+						.authenticated();
 				}
 			)
-			.authorizeHttpRequests(request -> request
-				.anyRequest()
-				.authenticated())
+			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 			.csrf(AbstractHttpConfigurer::disable);
 
 		return http.build();
