@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +22,13 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	// private final UserJDBCRepository userJDBCRepository;
 	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	// PSA: 환경설정을 살짝 바꿔서 일관된 서비스를 제공하는 것
 	public void create(UserCreateRequest request) {
 		var newUser = User.normalUser(
 			request.loginId(),
-			request.password(),
+			passwordEncoder.encode(request.password()),
 			request.name(),
 			request.email(),
 			request.mobile(),

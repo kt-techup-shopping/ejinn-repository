@@ -46,7 +46,6 @@ public class UserController extends SwaggerAssistance {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ApiResult<Void> create(@Valid @RequestBody UserCreateRequest request) {
 		// jackson object mapper -> json과 dto 매핑
-
 		userService.create(request);
 		return ApiResult.ok();
 	}
