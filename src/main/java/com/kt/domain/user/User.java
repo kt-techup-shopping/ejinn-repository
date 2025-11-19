@@ -43,6 +43,7 @@ public class User extends BaseEntity {
 	private LocalDate birthday;
 	@Enumerated(EnumType.STRING)
 	private Role role;
+	private Status status = Status.ACTIVATED;
 
 	@OneToMany(mappedBy = "user")
 	private List<Order> orders = new ArrayList<>();
@@ -101,5 +102,9 @@ public class User extends BaseEntity {
 		this.name = name;
 		this.email = email;
 		this.mobile = mobile;
+	}
+
+	public void withdrawal() {
+		this.status = Status.IN_ACTIVATED;
 	}
 }

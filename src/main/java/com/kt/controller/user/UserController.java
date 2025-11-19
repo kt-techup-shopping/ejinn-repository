@@ -19,7 +19,6 @@ import com.kt.domain.user.User;
 import com.kt.dto.user.UserCreateRequest;
 import com.kt.dto.user.UserUpdatePasswordRequest;
 import com.kt.security.CurrentUser;
-import com.kt.security.DefaultCurrentUser;
 import com.kt.service.UserService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -101,5 +100,15 @@ public class UserController extends SwaggerAssistance {
 		var userInfo = userService.detail(currentUser.getId());
 
 		return ApiResult.ok(userInfo);
+	}
+
+	@PutMapping("/withdrawal")
+	@ResponseStatus(HttpStatus.OK)
+	public ApiResult<Void> withdrawal(
+		@AuthenticationPrincipal CurrentUser currentUser
+	) {
+		userService.withdrawal(currentUser.getId());
+
+		return ApiResult.ok();
 	}
 }
