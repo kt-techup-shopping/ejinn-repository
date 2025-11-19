@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.ApiResult;
 import com.kt.dto.order.OrderRequest;
-import com.kt.security.CurrentUser;
 import com.kt.security.DefaultCurrentUser;
 import com.kt.service.OrderService;
 

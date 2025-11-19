@@ -1,6 +1,7 @@
 package com.kt.controller.user;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.ApiResult;
 import com.kt.common.SwaggerAssistance;
+import com.kt.domain.user.User;
 import com.kt.dto.user.UserCreateRequest;
 import com.kt.dto.user.UserUpdatePasswordRequest;
+import com.kt.security.CurrentUser;
 import com.kt.service.UserService;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -86,6 +87,27 @@ public class UserController extends SwaggerAssistance {
 	@ResponseStatus(HttpStatus.OK)
 	public ApiResult<Void> delete(@PathVariable Long id) {
 		userService.delete(id);
+
+		return ApiResult.ok();
+	}
+
+	@GetMapping("/my-info")
+	@ResponseStatus(HttpStatus.OK)
+	public ApiResult<User> getMyInfo(
+		@AuthenticationPrincipal CurrentUser currentUser
+	) {
+		// TODO: 어떤 정보를 넘겨줄 지 미정
+		var userInfo = userService.detail(currentUser.getId());
+
+		return ApiResult.ok(userInfo);
+	}
+
+	@PutMapping("/withdrawal")
+	@ResponseStatus(HttpStatus.OK)
+	public ApiResult<Void> withdrawal(
+		@AuthenticationPrincipal CurrentUser currentUser
+	) {
+		userService.withdrawal(currentUser.getId());
 
 		return ApiResult.ok();
 	}

@@ -82,4 +82,10 @@ public class UserService {
 
 		user.changePassword(encoded);
 	}
+
+	public void withdrawal(Long id) {
+		var user = userRepository.findByIdOrThrow(id, ErrorCode.NOT_FOUND_USER);
+
+		user.withdrawal();
+	}
 }
