@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -28,6 +29,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class User extends BaseEntity {
 	private String loginId;
+	private String uuid = UUID
+		.randomUUID()
+		.toString();
 	private String password;
 	private String name;
 	private String email;
