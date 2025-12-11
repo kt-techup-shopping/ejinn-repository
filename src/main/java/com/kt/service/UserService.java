@@ -88,4 +88,20 @@ public class UserService {
 
 		user.withdrawal();
 	}
+
+	public void getOrders(Long id) {
+		var user = userRepository.findByIdOrThrow(id, ErrorCode.NOT_FOUND_USER);
+		var orders = user.getOrders();
+
+		var products = orders
+			.stream()
+			.flatMap(order
+				-> order
+				.getOrderProducts()
+				.stream()
+				.map(orderProduct -> orderProduct
+					.getProduct()
+					.getName()))
+			.toList();
+	}
 }

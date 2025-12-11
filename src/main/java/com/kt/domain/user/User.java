@@ -43,6 +43,7 @@ public class User extends BaseEntity {
 	private LocalDate birthday;
 	@Enumerated(EnumType.STRING)
 	private Role role;
+	@Enumerated(EnumType.STRING)
 	private Status status = Status.ACTIVATED;
 
 	@OneToMany(mappedBy = "user")
