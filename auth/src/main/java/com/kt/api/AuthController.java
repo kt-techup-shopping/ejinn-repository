@@ -3,6 +3,7 @@ package com.kt.api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kt.common.ApiResult;
@@ -25,7 +26,6 @@ public class AuthController {
 
 		return ApiResult.ok(new LoginResponse(pair.getFirst(), pair.getSecond()));
 	}
-
 	// 인증방식
 	// 1. 세션기반 인증 -> 서버쪽에 작은 공간에 사용자 정보를 저장 - 만료 시간
 	// -> 서버에서 관리하기 때문에 보안성이 좋음

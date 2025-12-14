@@ -111,4 +111,12 @@ public class UserController extends SwaggerAssistance {
 
 		return ApiResult.ok();
 	}
+
+	@GetMapping("/orders")
+	@ResponseStatus(HttpStatus.OK)
+	public void getOrders(
+		@AuthenticationPrincipal CurrentUser currentUser
+	) {
+		userService.getOrders(currentUser.getId());
+	}
 }

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.BatchSize;
+
 import com.kt.common.BaseEntity;
 import com.kt.domain.orderproduct.OrderProduct;
 import com.kt.domain.user.User;
@@ -35,6 +37,7 @@ public class Order extends BaseEntity {
 	private User user;
 
 	@OneToMany(mappedBy = "order")
+	// @BatchSize(size = 100)
 	private List<OrderProduct> orderProducts = new ArrayList<>();
 
 	// 주문생성, 주문상태변경, 주문생성완료재고차감, 배송받는사람정보수정, 주문취소
