@@ -4,3 +4,10 @@ pluginManagement {
     }
 }
 rootProject.name = 'shopping'
+
+include 'admin'
+include 'core'
+include 'user'
+include 'common'
+include 'integration'
+include 'auth'
